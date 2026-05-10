@@ -23,6 +23,7 @@ export default function Home() {
   const [cropOpen, setCropOpen] = useState(false);
   const [imgSrc, setImgSrc] = useState("");
   const [hasPhoto, setHasPhoto] = useState(false);
+  const [croppedUrl, setCroppedUrl] = useState("");
 
   const cropImgRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -204,13 +205,15 @@ export default function Home() {
   /* ── confirm crop ── */
   const confirmCrop = () => {
     const img = cropImgRef.current!;
-    const ctx = canvasRef.current!.getContext("2d")!;
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
     ctx.clearRect(0, 0, OUT, OUT);
     const srcX = -oxRef.current / scaleRef.current;
     const srcY = -oyRef.current / scaleRef.current;
     const srcW = STAGE / scaleRef.current;
     const srcH = STAGE / scaleRef.current;
     ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUT, OUT);
+    setCroppedUrl(canvas.toDataURL("image/jpeg", 0.92));
     setHasPhoto(true);
     setCropOpen(false);
   };
@@ -307,6 +310,17 @@ export default function Home() {
               🌷
             </span>
           </div>
+
+          {/* Download cropped photo */}
+          {croppedUrl && (
+            <a
+              href={croppedUrl}
+              download="mom.jpg"
+              className="download-btn"
+            >
+              ⬇ Download cropped photo → replace public/mom.jpg → redeploy
+            </a>
+          )}
 
           {/* Title */}
           <div className="title-wrap">
@@ -521,6 +535,15 @@ const css = `
 
   @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
   @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+
+  .download-btn {
+    display:block;font-family:'Cormorant Garamond',serif;font-size:.7rem;
+    letter-spacing:.08em;text-align:center;color:var(--gold);
+    border:1px solid rgba(212,168,83,.35);border-radius:999px;
+    padding:.45rem 1.2rem;margin-bottom:1.2rem;text-decoration:none;
+    background:rgba(212,168,83,.07);transition:background .2s;
+  }
+  .download-btn:hover { background:rgba(212,168,83,.15); }
 
   /* ── Crop Modal ── */
   .crop-overlay {
