@@ -48,23 +48,11 @@ export default function Home() {
     );
   }, []);
 
-  // Load default mom.jpg from public folder on mount
+  // Load default mom.jpg and open crop modal so user can position it
   useEffect(() => {
     const img = new Image();
-    img.onload = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d")!;
-      const size = OUT;
-      const scale = Math.max(size / img.naturalWidth, size / img.naturalHeight);
-      const sw = img.naturalWidth * scale;
-      const sh = img.naturalHeight * scale;
-      const sx = (size - sw) / 2;
-      const sy = (size - sh) / 2;
-      ctx.clearRect(0, 0, size, size);
-      ctx.drawImage(img, sx, sy, sw, sh);
-      setHasPhoto(true);
-    };
+    img.onload = () => setImgSrc("/mom.jpg");
+    img.onerror = () => {}; // no file = show placeholder, that's fine
     img.src = "/mom.jpg";
   }, []);
 
